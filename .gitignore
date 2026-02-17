@@ -1,0 +1,40 @@
+# Binaries
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+/bin/
+
+# Test binary, built with `go test -c`
+*.test
+
+# Output of the go coverage tool
+*.out
+/coverage.out
+
+# Env
+.env
+.env.local
+
+# IDE
+.idea/
+*.iml
+.vscode/
+
+# Go
+/vendor/
+
+# Proto: клонированный infra при make proto-build
+build/
+
+# Proto build artifacts (generated code is committed in pkg/gen/)
+*.pb
+pkg/gen/*/rawdesc.txt
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log

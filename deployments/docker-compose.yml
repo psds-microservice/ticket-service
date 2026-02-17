@@ -1,0 +1,35 @@
+version: "3.9"
+
+services:
+  ticket-service:
+    build: ..
+    environment:
+      - APP_HOST=0.0.0.0
+      - APP_PORT=8095
+      - APP_ENV=development
+      - LOG_LEVEL=debug
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASSWORD=postgres
+      - DB_DATABASE=ticket_service
+      - DB_SSLMODE=disable
+    ports:
+      - "8095:8095"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_DB=ticket_service
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5438:5432"
+    volumes:
+      - ticket_service_pgdata:/var/lib/postgresql/data
+
+volumes:
+  ticket_service_pgdata: {}
+
