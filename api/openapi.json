@@ -47,6 +47,30 @@
             "required": false,
             "type": "integer",
             "format": "int32"
+          },
+          {
+            "name": "clientId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "operatorId",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "status",
+            "in": "query",
+            "required": false,
+            "type": "string"
+          },
+          {
+            "name": "region",
+            "in": "query",
+            "required": false,
+            "type": "string"
           }
         ],
         "tags": [
@@ -106,7 +130,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "format": "int64"
           }
         ],
         "tags": [
@@ -134,7 +159,8 @@
             "name": "id",
             "in": "path",
             "required": true,
-            "type": "string"
+            "type": "string",
+            "format": "int64"
           },
           {
             "name": "body",
@@ -158,10 +184,16 @@
         "subject": {
           "type": "string"
         },
-        "body": {
+        "notes": {
           "type": "string"
         },
         "status": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "region": {
           "type": "string"
         }
       }
@@ -197,16 +229,28 @@
     "ticket_serviceCreateTicketRequest": {
       "type": "object",
       "properties": {
-        "subject": {
-          "type": "string"
-        },
-        "body": {
-          "type": "string"
-        },
         "sessionId": {
           "type": "string"
         },
+        "clientId": {
+          "type": "string"
+        },
         "operatorId": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "priority": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "notes": {
           "type": "string"
         }
       }
@@ -231,15 +275,13 @@
       "type": "object",
       "properties": {
         "id": {
-          "type": "string"
-        },
-        "subject": {
-          "type": "string"
-        },
-        "body": {
-          "type": "string"
+          "type": "string",
+          "format": "int64"
         },
         "sessionId": {
+          "type": "string"
+        },
+        "clientId": {
           "type": "string"
         },
         "operatorId": {
@@ -248,11 +290,27 @@
         "status": {
           "type": "string"
         },
+        "priority": {
+          "type": "string"
+        },
+        "region": {
+          "type": "string"
+        },
+        "subject": {
+          "type": "string"
+        },
+        "notes": {
+          "type": "string"
+        },
         "createdAt": {
           "type": "string",
           "format": "date-time"
         },
         "updatedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "closedAt": {
           "type": "string",
           "format": "date-time"
         }

@@ -18,7 +18,8 @@ help:
 	@echo "  make migrate  - Run database migrations"
 	@echo "  make proto / proto-generate / proto-openapi  - as in user-service"
 	@echo "  make install-deps / update"
-	@echo "  Port: $(PORT)  Health: http://localhost:$(PORT)/health  Swagger: http://localhost:$(PORT)/swagger"
+	@echo "  HTTP Port: $(PORT)  gRPC Port: 9097"
+	@echo "  Health: http://localhost:$(PORT)/health  Swagger: http://localhost:$(PORT)/swagger"
 
 build:
 	@mkdir -p $(BIN_DIR)

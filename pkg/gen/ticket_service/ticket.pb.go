@@ -25,10 +25,14 @@ const (
 
 type CreateTicketRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
-	Subject       string                 `protobuf:"bytes,1,opt,name=subject,proto3" json:"subject,omitempty"`
-	Body          string                 `protobuf:"bytes,2,opt,name=body,proto3" json:"body,omitempty"`
-	SessionId     string                 `protobuf:"bytes,3,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	OperatorId    string                 `protobuf:"bytes,4,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
+	SessionId     string                 `protobuf:"bytes,1,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	ClientId      string                 `protobuf:"bytes,2,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	OperatorId    string                 `protobuf:"bytes,3,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
+	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Priority      string                 `protobuf:"bytes,5,opt,name=priority,proto3" json:"priority,omitempty"`
+	Region        string                 `protobuf:"bytes,6,opt,name=region,proto3" json:"region,omitempty"`
+	Subject       string                 `protobuf:"bytes,7,opt,name=subject,proto3" json:"subject,omitempty"`
+	Notes         string                 `protobuf:"bytes,8,opt,name=notes,proto3" json:"notes,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -63,20 +67,6 @@ func (*CreateTicketRequest) Descriptor() ([]byte, []int) {
 	return file_ticket_proto_rawDescGZIP(), []int{0}
 }
 
-func (x *CreateTicketRequest) GetSubject() string {
-	if x != nil {
-		return x.Subject
-	}
-	return ""
-}
-
-func (x *CreateTicketRequest) GetBody() string {
-	if x != nil {
-		return x.Body
-	}
-	return ""
-}
-
 func (x *CreateTicketRequest) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
@@ -84,9 +74,51 @@ func (x *CreateTicketRequest) GetSessionId() string {
 	return ""
 }
 
+func (x *CreateTicketRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
 func (x *CreateTicketRequest) GetOperatorId() string {
 	if x != nil {
 		return x.OperatorId
+	}
+	return ""
+}
+
+func (x *CreateTicketRequest) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *CreateTicketRequest) GetPriority() string {
+	if x != nil {
+		return x.Priority
+	}
+	return ""
+}
+
+func (x *CreateTicketRequest) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
+func (x *CreateTicketRequest) GetSubject() string {
+	if x != nil {
+		return x.Subject
+	}
+	return ""
+}
+
+func (x *CreateTicketRequest) GetNotes() string {
+	if x != nil {
+		return x.Notes
 	}
 	return ""
 }
@@ -139,6 +171,10 @@ type ListTicketsRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Limit         int32                  `protobuf:"varint,1,opt,name=limit,proto3" json:"limit,omitempty"`
 	Offset        int32                  `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	ClientId      string                 `protobuf:"bytes,3,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	OperatorId    string                 `protobuf:"bytes,4,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	Region        string                 `protobuf:"bytes,6,opt,name=region,proto3" json:"region,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -187,12 +223,42 @@ func (x *ListTicketsRequest) GetOffset() int32 {
 	return 0
 }
 
+func (x *ListTicketsRequest) GetClientId() string {
+	if x != nil {
+		return x.ClientId
+	}
+	return ""
+}
+
+func (x *ListTicketsRequest) GetOperatorId() string {
+	if x != nil {
+		return x.OperatorId
+	}
+	return ""
+}
+
+func (x *ListTicketsRequest) GetStatus() string {
+	if x != nil {
+		return x.Status
+	}
+	return ""
+}
+
+func (x *ListTicketsRequest) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
 type UpdateTicketRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
 	Subject       string                 `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
-	Body          string                 `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	Notes         string                 `protobuf:"bytes,3,opt,name=notes,proto3" json:"notes,omitempty"`
 	Status        string                 `protobuf:"bytes,4,opt,name=status,proto3" json:"status,omitempty"`
+	Priority      string                 `protobuf:"bytes,5,opt,name=priority,proto3" json:"priority,omitempty"`
+	Region        string                 `protobuf:"bytes,6,opt,name=region,proto3" json:"region,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -241,9 +307,9 @@ func (x *UpdateTicketRequest) GetSubject() string {
 	return ""
 }
 
-func (x *UpdateTicketRequest) GetBody() string {
+func (x *UpdateTicketRequest) GetNotes() string {
 	if x != nil {
-		return x.Body
+		return x.Notes
 	}
 	return ""
 }
@@ -255,16 +321,34 @@ func (x *UpdateTicketRequest) GetStatus() string {
 	return ""
 }
 
+func (x *UpdateTicketRequest) GetPriority() string {
+	if x != nil {
+		return x.Priority
+	}
+	return ""
+}
+
+func (x *UpdateTicketRequest) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
 type Ticket struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Id            int64                  `protobuf:"varint,1,opt,name=id,proto3" json:"id,omitempty"`
-	Subject       string                 `protobuf:"bytes,2,opt,name=subject,proto3" json:"subject,omitempty"`
-	Body          string                 `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
-	SessionId     string                 `protobuf:"bytes,4,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
-	OperatorId    string                 `protobuf:"bytes,5,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
-	Status        string                 `protobuf:"bytes,6,opt,name=status,proto3" json:"status,omitempty"`
-	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
-	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	SessionId     string                 `protobuf:"bytes,2,opt,name=session_id,json=sessionId,proto3" json:"session_id,omitempty"`
+	ClientId      string                 `protobuf:"bytes,3,opt,name=client_id,json=clientId,proto3" json:"client_id,omitempty"`
+	OperatorId    string                 `protobuf:"bytes,4,opt,name=operator_id,json=operatorId,proto3" json:"operator_id,omitempty"`
+	Status        string                 `protobuf:"bytes,5,opt,name=status,proto3" json:"status,omitempty"`
+	Priority      string                 `protobuf:"bytes,6,opt,name=priority,proto3" json:"priority,omitempty"`
+	Region        string                 `protobuf:"bytes,7,opt,name=region,proto3" json:"region,omitempty"`
+	Subject       string                 `protobuf:"bytes,8,opt,name=subject,proto3" json:"subject,omitempty"`
+	Notes         string                 `protobuf:"bytes,9,opt,name=notes,proto3" json:"notes,omitempty"`
+	CreatedAt     *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=created_at,json=createdAt,proto3" json:"created_at,omitempty"`
+	UpdatedAt     *timestamppb.Timestamp `protobuf:"bytes,11,opt,name=updated_at,json=updatedAt,proto3" json:"updated_at,omitempty"`
+	ClosedAt      *timestamppb.Timestamp `protobuf:"bytes,12,opt,name=closed_at,json=closedAt,proto3" json:"closed_at,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -306,23 +390,16 @@ func (x *Ticket) GetId() int64 {
 	return 0
 }
 
-func (x *Ticket) GetSubject() string {
-	if x != nil {
-		return x.Subject
-	}
-	return ""
-}
-
-func (x *Ticket) GetBody() string {
-	if x != nil {
-		return x.Body
-	}
-	return ""
-}
-
 func (x *Ticket) GetSessionId() string {
 	if x != nil {
 		return x.SessionId
+	}
+	return ""
+}
+
+func (x *Ticket) GetClientId() string {
+	if x != nil {
+		return x.ClientId
 	}
 	return ""
 }
@@ -341,6 +418,34 @@ func (x *Ticket) GetStatus() string {
 	return ""
 }
 
+func (x *Ticket) GetPriority() string {
+	if x != nil {
+		return x.Priority
+	}
+	return ""
+}
+
+func (x *Ticket) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
+func (x *Ticket) GetSubject() string {
+	if x != nil {
+		return x.Subject
+	}
+	return ""
+}
+
+func (x *Ticket) GetNotes() string {
+	if x != nil {
+		return x.Notes
+	}
+	return ""
+}
+
 func (x *Ticket) GetCreatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.CreatedAt
@@ -351,6 +456,13 @@ func (x *Ticket) GetCreatedAt() *timestamppb.Timestamp {
 func (x *Ticket) GetUpdatedAt() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UpdatedAt
+	}
+	return nil
+}
+
+func (x *Ticket) GetClosedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.ClosedAt
 	}
 	return nil
 }
@@ -411,37 +523,53 @@ var File_ticket_proto protoreflect.FileDescriptor
 
 const file_ticket_proto_rawDesc = "" +
 	"\n" +
-	"\fticket.proto\x12\x0eticket_service\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\x83\x01\n" +
-	"\x13CreateTicketRequest\x12\x18\n" +
-	"\asubject\x18\x01 \x01(\tR\asubject\x12\x12\n" +
-	"\x04body\x18\x02 \x01(\tR\x04body\x12\x1d\n" +
+	"\fticket.proto\x12\x0eticket_service\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1cgoogle/api/annotations.proto\"\xee\x01\n" +
+	"\x13CreateTicketRequest\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x03 \x01(\tR\tsessionId\x12\x1f\n" +
-	"\voperator_id\x18\x04 \x01(\tR\n" +
-	"operatorId\"\"\n" +
+	"session_id\x18\x01 \x01(\tR\tsessionId\x12\x1b\n" +
+	"\tclient_id\x18\x02 \x01(\tR\bclientId\x12\x1f\n" +
+	"\voperator_id\x18\x03 \x01(\tR\n" +
+	"operatorId\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x1a\n" +
+	"\bpriority\x18\x05 \x01(\tR\bpriority\x12\x16\n" +
+	"\x06region\x18\x06 \x01(\tR\x06region\x12\x18\n" +
+	"\asubject\x18\a \x01(\tR\asubject\x12\x14\n" +
+	"\x05notes\x18\b \x01(\tR\x05notes\"\"\n" +
 	"\x10GetTicketRequest\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\"B\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\"\xb0\x01\n" +
 	"\x12ListTicketsRequest\x12\x14\n" +
 	"\x05limit\x18\x01 \x01(\x05R\x05limit\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x05R\x06offset\"k\n" +
+	"\x06offset\x18\x02 \x01(\x05R\x06offset\x12\x1b\n" +
+	"\tclient_id\x18\x03 \x01(\tR\bclientId\x12\x1f\n" +
+	"\voperator_id\x18\x04 \x01(\tR\n" +
+	"operatorId\x12\x16\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12\x16\n" +
+	"\x06region\x18\x06 \x01(\tR\x06region\"\xa1\x01\n" +
 	"\x13UpdateTicketRequest\x12\x0e\n" +
 	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
-	"\asubject\x18\x02 \x01(\tR\asubject\x12\x12\n" +
-	"\x04body\x18\x03 \x01(\tR\x04body\x12\x16\n" +
-	"\x06status\x18\x04 \x01(\tR\x06status\"\x94\x02\n" +
+	"\asubject\x18\x02 \x01(\tR\asubject\x12\x14\n" +
+	"\x05notes\x18\x03 \x01(\tR\x05notes\x12\x16\n" +
+	"\x06status\x18\x04 \x01(\tR\x06status\x12\x1a\n" +
+	"\bpriority\x18\x05 \x01(\tR\bpriority\x12\x16\n" +
+	"\x06region\x18\x06 \x01(\tR\x06region\"\xa0\x03\n" +
 	"\x06Ticket\x12\x0e\n" +
-	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x18\n" +
-	"\asubject\x18\x02 \x01(\tR\asubject\x12\x12\n" +
-	"\x04body\x18\x03 \x01(\tR\x04body\x12\x1d\n" +
+	"\x02id\x18\x01 \x01(\x03R\x02id\x12\x1d\n" +
 	"\n" +
-	"session_id\x18\x04 \x01(\tR\tsessionId\x12\x1f\n" +
-	"\voperator_id\x18\x05 \x01(\tR\n" +
+	"session_id\x18\x02 \x01(\tR\tsessionId\x12\x1b\n" +
+	"\tclient_id\x18\x03 \x01(\tR\bclientId\x12\x1f\n" +
+	"\voperator_id\x18\x04 \x01(\tR\n" +
 	"operatorId\x12\x16\n" +
-	"\x06status\x18\x06 \x01(\tR\x06status\x129\n" +
+	"\x06status\x18\x05 \x01(\tR\x06status\x12\x1a\n" +
+	"\bpriority\x18\x06 \x01(\tR\bpriority\x12\x16\n" +
+	"\x06region\x18\a \x01(\tR\x06region\x12\x18\n" +
+	"\asubject\x18\b \x01(\tR\asubject\x12\x14\n" +
+	"\x05notes\x18\t \x01(\tR\x05notes\x129\n" +
 	"\n" +
-	"created_at\x18\a \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
+	"created_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\tcreatedAt\x129\n" +
 	"\n" +
-	"updated_at\x18\b \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\"]\n" +
+	"updated_at\x18\v \x01(\v2\x1a.google.protobuf.TimestampR\tupdatedAt\x127\n" +
+	"\tclosed_at\x18\f \x01(\v2\x1a.google.protobuf.TimestampR\bclosedAt\"]\n" +
 	"\x13ListTicketsResponse\x120\n" +
 	"\atickets\x18\x01 \x03(\v2\x16.ticket_service.TicketR\atickets\x12\x14\n" +
 	"\x05total\x18\x02 \x01(\x05R\x05total2\xbc\x03\n" +
@@ -476,20 +604,21 @@ var file_ticket_proto_goTypes = []any{
 var file_ticket_proto_depIdxs = []int32{
 	6, // 0: ticket_service.Ticket.created_at:type_name -> google.protobuf.Timestamp
 	6, // 1: ticket_service.Ticket.updated_at:type_name -> google.protobuf.Timestamp
-	4, // 2: ticket_service.ListTicketsResponse.tickets:type_name -> ticket_service.Ticket
-	0, // 3: ticket_service.TicketService.CreateTicket:input_type -> ticket_service.CreateTicketRequest
-	1, // 4: ticket_service.TicketService.GetTicket:input_type -> ticket_service.GetTicketRequest
-	2, // 5: ticket_service.TicketService.ListTickets:input_type -> ticket_service.ListTicketsRequest
-	3, // 6: ticket_service.TicketService.UpdateTicket:input_type -> ticket_service.UpdateTicketRequest
-	4, // 7: ticket_service.TicketService.CreateTicket:output_type -> ticket_service.Ticket
-	4, // 8: ticket_service.TicketService.GetTicket:output_type -> ticket_service.Ticket
-	5, // 9: ticket_service.TicketService.ListTickets:output_type -> ticket_service.ListTicketsResponse
-	4, // 10: ticket_service.TicketService.UpdateTicket:output_type -> ticket_service.Ticket
-	7, // [7:11] is the sub-list for method output_type
-	3, // [3:7] is the sub-list for method input_type
-	3, // [3:3] is the sub-list for extension type_name
-	3, // [3:3] is the sub-list for extension extendee
-	0, // [0:3] is the sub-list for field type_name
+	6, // 2: ticket_service.Ticket.closed_at:type_name -> google.protobuf.Timestamp
+	4, // 3: ticket_service.ListTicketsResponse.tickets:type_name -> ticket_service.Ticket
+	0, // 4: ticket_service.TicketService.CreateTicket:input_type -> ticket_service.CreateTicketRequest
+	1, // 5: ticket_service.TicketService.GetTicket:input_type -> ticket_service.GetTicketRequest
+	2, // 6: ticket_service.TicketService.ListTickets:input_type -> ticket_service.ListTicketsRequest
+	3, // 7: ticket_service.TicketService.UpdateTicket:input_type -> ticket_service.UpdateTicketRequest
+	4, // 8: ticket_service.TicketService.CreateTicket:output_type -> ticket_service.Ticket
+	4, // 9: ticket_service.TicketService.GetTicket:output_type -> ticket_service.Ticket
+	5, // 10: ticket_service.TicketService.ListTickets:output_type -> ticket_service.ListTicketsResponse
+	4, // 11: ticket_service.TicketService.UpdateTicket:output_type -> ticket_service.Ticket
+	8, // [8:12] is the sub-list for method output_type
+	4, // [4:8] is the sub-list for method input_type
+	4, // [4:4] is the sub-list for extension type_name
+	4, // [4:4] is the sub-list for extension extendee
+	0, // [0:4] is the sub-list for field type_name
 }
 
 func init() { file_ticket_proto_init() }

@@ -15,9 +15,55 @@ service TicketService {
     option (google.api.http) = { put: "/api/v1/tickets/{id}"; body: "*" }; }
 }
 
-message CreateTicketRequest { string subject = 1; string body = 2; string session_id = 3; string operator_id = 4; }
-message GetTicketRequest { int64 id = 1; }
-message ListTicketsRequest { int32 limit = 1; int32 offset = 2; }
-message UpdateTicketRequest { int64 id = 1; string subject = 2; string body = 3; string status = 4; }
-message Ticket { int64 id = 1; string subject = 2; string body = 3; string session_id = 4; string operator_id = 5; string status = 6; google.protobuf.Timestamp created_at = 7; google.protobuf.Timestamp updated_at = 8; }
-message ListTicketsResponse { repeated Ticket tickets = 1; int32 total = 2; }
+message CreateTicketRequest {
+  string session_id = 1;
+  string client_id = 2;
+  string operator_id = 3;
+  string status = 4;
+  string priority = 5;
+  string region = 6;
+  string subject = 7;
+  string notes = 8;
+}
+
+message GetTicketRequest {
+  int64 id = 1;
+}
+
+message ListTicketsRequest {
+  int32 limit = 1;
+  int32 offset = 2;
+  string client_id = 3;
+  string operator_id = 4;
+  string status = 5;
+  string region = 6;
+}
+
+message UpdateTicketRequest {
+  int64 id = 1;
+  string subject = 2;
+  string notes = 3;
+  string status = 4;
+  string priority = 5;
+  string region = 6;
+}
+
+message Ticket {
+  int64 id = 1;
+  string session_id = 2;
+  string client_id = 3;
+  string operator_id = 4;
+  string status = 5;
+  string priority = 6;
+  string region = 7;
+  string subject = 8;
+  string notes = 9;
+  google.protobuf.Timestamp created_at = 10;
+  google.protobuf.Timestamp updated_at = 11;
+  google.protobuf.Timestamp closed_at = 12;
+}
+
+message ListTicketsResponse {
+  repeated Ticket tickets = 1;
+  int32 total = 2;
+}

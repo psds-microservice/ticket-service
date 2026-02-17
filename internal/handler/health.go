@@ -1,15 +1,21 @@
 package handler
 
 import (
+	"encoding/json"
 	"net/http"
-
-	"github.com/gin-gonic/gin"
+	"time"
 )
 
-func Health(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "ok"})
+func Health(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]interface{}{
+		"status":  "ok",
+		"service": "ticket-service",
+		"time":    time.Now().Unix(),
+	})
 }
 
-func Ready(c *gin.Context) {
-	c.JSON(http.StatusOK, gin.H{"status": "ready"})
+func Ready(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(map[string]string{"status": "ready"})
 }

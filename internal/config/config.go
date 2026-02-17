@@ -12,6 +12,7 @@ import (
 type Config struct {
 	AppHost  string
 	HTTPPort string
+	GRPCPort string
 	AppEnv   string
 	LogLevel string
 
@@ -35,6 +36,7 @@ func Load() (*Config, error) {
 	cfg := &Config{
 		AppHost:          getEnv("APP_HOST", "0.0.0.0"),
 		HTTPPort:         firstEnv("APP_PORT", "HTTP_PORT", "8097"),
+		GRPCPort:         firstEnv("GRPC_PORT", "METRICS_PORT", "9097"),
 		AppEnv:           getEnv("APP_ENV", "development"),
 		LogLevel:         getEnv("LOG_LEVEL", "info"),
 		SearchServiceURL: getEnv("SEARCH_SERVICE_URL", ""),

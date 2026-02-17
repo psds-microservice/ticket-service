@@ -16,7 +16,7 @@ import (
 
 var apiCmd = &cobra.Command{
 	Use:   "api",
-	Short: "Run HTTP API server",
+	Short: "Run HTTP + gRPC API server",
 	RunE:  runAPI,
 }
 
