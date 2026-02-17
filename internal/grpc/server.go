@@ -16,10 +16,10 @@ import (
 	"gorm.io/gorm"
 )
 
-// Deps — зависимости gRPC-сервера
+// Deps — зависимости gRPC-сервера (D: зависимость от абстракций).
 type Deps struct {
-	Ticket *service.TicketService
-	Search *searchindex.Client
+	Ticket  service.TicketServicer
+	Indexer searchindex.TicketIndexer
 }
 
 // Server implements ticket_service.TicketServiceServer
@@ -113,8 +113,8 @@ func (s *Server) CreateTicket(ctx context.Context, req *ticket_service.CreateTic
 	if err := s.Ticket.Create(ctx, ticket); err != nil {
 		return nil, s.mapError(err)
 	}
-	if s.Search != nil {
-		s.Search.IndexTicketAsync(ticket)
+	if s.Indexer != nil {
+		s.Indexer.IndexTicketAsync(ticket)
 	}
 	return toProtoTicket(ticket), nil
 }
@@ -197,12 +197,12 @@ func (s *Server) UpdateTicket(ctx context.Context, req *ticket_service.UpdateTic
 		return nil, s.mapError(err)
 	}
 
-	if s.Search != nil {
-		// Re-fetch for full entity to index
-		if full, _ := s.Ticket.GetByID(ctx, uint64(req.GetId())); full != nil {
-			s.Search.IndexTicketAsync(full)
+	if s.Indexer != nil {
+			// Re-fetch for full entity to index
+			if full, _ := s.Ticket.GetByID(ctx, uint64(req.GetId())); full != nil {
+				s.Indexer.IndexTicketAsync(full)
+			}
 		}
-	}
 
 	return toProtoTicket(ticket), nil
 }

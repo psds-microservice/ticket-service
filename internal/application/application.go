@@ -83,8 +83,8 @@ func NewAPI(cfg *config.Config) (*API, error) {
 	}
 	grpcSrv := grpc.NewServer()
 	grpcImpl := grpcserver.NewServer(grpcserver.Deps{
-		Ticket: ticketSvc,
-		Search: searchClient,
+		Ticket:  ticketSvc,
+		Indexer: searchClient,
 	})
 	ticket_service.RegisterTicketServiceServer(grpcSrv, grpcImpl)
 	reflection.Register(grpcSrv)

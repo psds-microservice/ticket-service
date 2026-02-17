@@ -11,6 +11,11 @@ import (
 	"github.com/psds-microservice/ticket-service/internal/model"
 )
 
+// TicketIndexer — интерфейс для индексации тикетов в search-service (для подмены моком в тестах).
+type TicketIndexer interface {
+	IndexTicketAsync(t *model.Ticket)
+}
+
 // Client отправляет тикеты в search-service для индексации (best-effort, не блокирует API).
 type Client struct {
 	baseURL    string

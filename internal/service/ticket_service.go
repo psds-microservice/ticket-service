@@ -9,6 +9,14 @@ import (
 	"gorm.io/gorm"
 )
 
+// TicketServicer — интерфейс для gRPC Deps (Dependency Inversion).
+type TicketServicer interface {
+	Create(ctx context.Context, t *model.Ticket) error
+	GetByID(ctx context.Context, id uint64) (*model.Ticket, error)
+	List(ctx context.Context, filter map[string]interface{}, limit, offset int) ([]model.Ticket, int64, error)
+	Update(ctx context.Context, id uint64, changes map[string]interface{}) (*model.Ticket, error)
+}
+
 type TicketService struct {
 	db *gorm.DB
 }
