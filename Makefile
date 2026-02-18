@@ -64,7 +64,7 @@ update:
 		github.com/psds-microservice/infra \
 		github.com/psds-microservice/search-service
 	go mod tidy
-	GOWORK=off go mod vendor
+	go mod vendor
 	$(MAKE) proto
 	@$(MAKE) proto-openapi 2>/dev/null || true
 	@echo "Dependencies updated"
