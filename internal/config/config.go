@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/url"
 	"os"
+	"strings"
 
 	"github.com/joho/godotenv"
 )
@@ -16,8 +17,12 @@ type Config struct {
 	AppEnv   string
 	LogLevel string
 
-	// SearchServiceURL — если задан, ticket-service отправляет тикеты в search-service для индексации (POST /search/index/ticket).
+	// SearchServiceURL — для reindex-search по HTTP, если Kafka не задан.
 	SearchServiceURL string
+	// KafkaBrokers — брокеры Kafka для событий тикетов (индексация в search-service через воркер).
+	KafkaBrokers []string
+	// KafkaTopicTicket — топик для событий тикетов (по умолчанию psds.ticket.events).
+	KafkaTopicTicket string
 
 	DB struct {
 		Host     string
@@ -32,6 +37,7 @@ type Config struct {
 func Load() (*Config, error) {
 	_ = godotenv.Load(".env")
 	_ = godotenv.Load("../.env")
+	_ = godotenv.Load("../../.env") // repo root when running from bin/
 
 	cfg := &Config{
 		AppHost:          getEnv("APP_HOST", "0.0.0.0"),
@@ -40,6 +46,14 @@ func Load() (*Config, error) {
 		AppEnv:           getEnv("APP_ENV", "development"),
 		LogLevel:         getEnv("LOG_LEVEL", "info"),
 		SearchServiceURL: getEnv("SEARCH_SERVICE_URL", ""),
+		KafkaTopicTicket: getEnv("KAFKA_TOPIC_TICKET", "psds.ticket.events"),
+	}
+	if brokers := getEnv("KAFKA_BROKERS", ""); brokers != "" {
+		for _, s := range strings.Split(brokers, ",") {
+			if t := strings.TrimSpace(s); t != "" {
+				cfg.KafkaBrokers = append(cfg.KafkaBrokers, t)
+			}
+		}
 	}
 	cfg.DB.Host = getEnv("DB_HOST", "localhost")
 	cfg.DB.Port = getEnv("DB_PORT", "5432")

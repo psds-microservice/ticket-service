@@ -1,4 +1,4 @@
-.PHONY: help build run run-dev clean tidy vet fmt health-check migrate proto proto-build proto-generate proto-generate-local proto-generate-docker proto-openapi install-deps update docker-build docker-compose-up docker-compose-down
+.PHONY: help build run run-dev clean tidy vet fmt health-check migrate reindex-search proto proto-build proto-generate proto-generate-local proto-generate-docker proto-openapi install-deps update docker-build docker-compose-up docker-compose-down
 
 APP_NAME = ticket-service
 CMD_PATH = ./cmd/ticket-service
@@ -16,6 +16,7 @@ help:
 	@echo "ticket-service"
 	@echo "  make build run run-dev clean tidy vet fmt health-check docker-build docker-compose-up"
 	@echo "  make migrate  - Run database migrations"
+	@echo "  make search  - Reindex all tickets into search (Elasticsearch)"
 	@echo "  make proto / proto-generate / proto-openapi  - as in user-service"
 	@echo "  make install-deps / update"
 	@echo "  HTTP Port: $(PORT)  gRPC Port: 9097"
@@ -35,8 +36,11 @@ run-dev:
 health-check:
 	@curl -sf http://localhost:$(PORT)/health && echo " OK" || echo " FAIL"
 
-migrate:
-	@go run $(CMD_PATH) migrate up
+migrate: build
+	@cd $(BIN_DIR) && ./$(APP_NAME) migrate up
+
+search: build
+	@./$(BIN_DIR)/$(APP_NAME) reindex-search
 
 vet:
 	go vet ./...

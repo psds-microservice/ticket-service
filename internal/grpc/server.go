@@ -6,8 +6,8 @@ import (
 	"log"
 
 	"github.com/psds-microservice/ticket-service/internal/errs"
+	"github.com/psds-microservice/ticket-service/internal/kafka"
 	"github.com/psds-microservice/ticket-service/internal/model"
-	"github.com/psds-microservice/ticket-service/internal/searchindex"
 	"github.com/psds-microservice/ticket-service/internal/service"
 	"github.com/psds-microservice/ticket-service/pkg/gen/ticket_service"
 	"google.golang.org/grpc/codes"
@@ -18,8 +18,8 @@ import (
 
 // Deps — зависимости gRPC-сервера (D: зависимость от абстракций).
 type Deps struct {
-	Ticket  service.TicketServicer
-	Indexer searchindex.TicketIndexer
+	Ticket   service.TicketServicer
+	Producer kafka.TicketEventProducer
 }
 
 // Server implements ticket_service.TicketServiceServer
@@ -53,6 +53,21 @@ func (s *Server) mapError(err error) error {
 	// Для остальных ошибок логируем и возвращаем Internal с сообщением
 	log.Printf("grpc: unhandled error: %v", err)
 	return status.Error(codes.Internal, err.Error())
+}
+
+func ticketEventPayload(t *model.Ticket) map[string]interface{} {
+	if t == nil {
+		return nil
+	}
+	return map[string]interface{}{
+		"ticket_id":   int64(t.ID),
+		"session_id":  t.SessionID,
+		"client_id":   t.ClientID,
+		"operator_id": t.OperatorID,
+		"subject":     t.Subject,
+		"notes":       t.Notes,
+		"status":      string(t.Status),
+	}
 }
 
 func toProtoTicket(t *model.Ticket) *ticket_service.Ticket {
@@ -113,8 +128,9 @@ func (s *Server) CreateTicket(ctx context.Context, req *ticket_service.CreateTic
 	if err := s.Ticket.Create(ctx, ticket); err != nil {
 		return nil, s.mapError(err)
 	}
-	if s.Indexer != nil {
-		s.Indexer.IndexTicketAsync(ticket)
+	if s.Producer != nil {
+		payload := ticketEventPayload(ticket)
+		go s.Producer.ProduceTicketEvent(context.Background(), "ticket.created", payload)
 	}
 	return toProtoTicket(ticket), nil
 }
@@ -196,13 +212,10 @@ func (s *Server) UpdateTicket(ctx context.Context, req *ticket_service.UpdateTic
 	if err != nil {
 		return nil, s.mapError(err)
 	}
-
-	if s.Indexer != nil {
-			// Re-fetch for full entity to index
-			if full, _ := s.Ticket.GetByID(ctx, uint64(req.GetId())); full != nil {
-				s.Indexer.IndexTicketAsync(full)
-			}
+	if s.Producer != nil {
+		if full, _ := s.Ticket.GetByID(ctx, uint64(req.GetId())); full != nil {
+			go s.Producer.ProduceTicketEvent(context.Background(), "ticket.updated", ticketEventPayload(full))
 		}
-
+	}
 	return toProtoTicket(ticket), nil
 }

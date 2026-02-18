@@ -16,7 +16,7 @@ import (
 	"github.com/psds-microservice/ticket-service/internal/database"
 	grpcserver "github.com/psds-microservice/ticket-service/internal/grpc"
 	"github.com/psds-microservice/ticket-service/internal/handler"
-	"github.com/psds-microservice/ticket-service/internal/searchindex"
+	"github.com/psds-microservice/ticket-service/internal/kafka"
 	"github.com/psds-microservice/ticket-service/internal/service"
 	"github.com/psds-microservice/ticket-service/pkg/gen/ticket_service"
 	httpSwagger "github.com/swaggo/http-swagger"
@@ -74,7 +74,7 @@ func NewAPI(cfg *config.Config) (*API, error) {
 	}
 
 	ticketSvc := service.NewTicketService(db)
-	searchClient := searchindex.NewClient(cfg.SearchServiceURL)
+	kafkaProducer := kafka.NewProducer(cfg.KafkaBrokers, cfg.KafkaTopicTicket)
 
 	grpcAddr := cfg.AppHost + ":" + cfg.GRPCPort
 	lis, err := net.Listen("tcp", grpcAddr)
@@ -83,8 +83,8 @@ func NewAPI(cfg *config.Config) (*API, error) {
 	}
 	grpcSrv := grpc.NewServer()
 	grpcImpl := grpcserver.NewServer(grpcserver.Deps{
-		Ticket:  ticketSvc,
-		Indexer: searchClient,
+		Ticket:   ticketSvc,
+		Producer: kafkaProducer,
 	})
 	ticket_service.RegisterTicketServiceServer(grpcSrv, grpcImpl)
 	reflection.Register(grpcSrv)

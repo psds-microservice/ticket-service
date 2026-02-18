@@ -2,18 +2,18 @@ package database
 
 import (
 	"database/sql"
-	"embed"
 	"fmt"
 	"log"
 	"net/url"
+	"os"
+	"path/filepath"
 	"strings"
 
+	"github.com/golang-migrate/migrate/v4"
+	_ "github.com/golang-migrate/migrate/v4/database/postgres"
+	_ "github.com/golang-migrate/migrate/v4/source/file"
 	"github.com/lib/pq"
-	"github.com/pressly/goose/v3"
 )
-
-//go:embed migrations/*.sql
-var embedMigrations embed.FS
 
 func ensureDatabase(databaseURL string) error {
 	u, err := url.Parse(databaseURL)
@@ -52,18 +52,34 @@ func MigrateUp(databaseURL string) error {
 	if err := ensureDatabase(databaseURL); err != nil {
 		return fmt.Errorf("ensure database: %w", err)
 	}
-	db, err := sql.Open("postgres", databaseURL)
+	cwd, _ := os.Getwd()
+	dirs := []string{
+		filepath.Join(cwd, "database", "migrations"),
+		filepath.Join(cwd, "..", "database", "migrations"),
+	}
+	var absDir string
+	for _, d := range dirs {
+		if _, err := os.Stat(d); err == nil {
+			absDir, _ = filepath.Abs(d)
+			break
+		}
+	}
+	if absDir == "" {
+		return fmt.Errorf("migrations dir not found")
+	}
+	sourceURL := "file://" + filepath.ToSlash(absDir)
+	m, err := migrate.New(sourceURL, databaseURL)
 	if err != nil {
-		return fmt.Errorf("open db: %w", err)
+		return fmt.Errorf("migrate new: %w", err)
 	}
-	defer db.Close()
-
-	goose.SetBaseFS(embedMigrations)
-	if err := goose.SetDialect("postgres"); err != nil {
-		return fmt.Errorf("set dialect: %w", err)
+	defer m.Close()
+	if err := m.Up(); err != nil && err != migrate.ErrNoChange {
+		return err
 	}
-	if err := goose.Up(db, "migrations"); err != nil {
-		return fmt.Errorf("goose up: %w", err)
+	if err == migrate.ErrNoChange {
+		log.Println("migrate: no pending migrations")
+	} else {
+		log.Println("migrate: up ok")
 	}
 	return nil
 }

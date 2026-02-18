@@ -17,4 +17,5 @@ func Execute() error {
 func init() {
 	rootCmd.AddCommand(apiCmd)
 	rootCmd.AddCommand(migrateCmd)
+	rootCmd.AddCommand(reindexSearchCmd)
 }

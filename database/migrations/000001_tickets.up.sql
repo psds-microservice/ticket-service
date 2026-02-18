@@ -1,4 +1,3 @@
--- +goose Up
 CREATE TABLE IF NOT EXISTS tickets (
     id          BIGSERIAL PRIMARY KEY,
     session_id  VARCHAR(64)  NOT NULL,
@@ -19,6 +18,3 @@ CREATE INDEX IF NOT EXISTS idx_tickets_client_id ON tickets (client_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_operator_id ON tickets (operator_id);
 CREATE INDEX IF NOT EXISTS idx_tickets_status ON tickets (status);
 CREATE INDEX IF NOT EXISTS idx_tickets_region ON tickets (region);
-
--- +goose Down
-DROP TABLE IF EXISTS tickets;
