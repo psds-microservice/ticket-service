@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"time"
 
 	"github.com/psds-microservice/ticket-service/internal/errs"
 	"github.com/psds-microservice/ticket-service/internal/kafka"
@@ -128,9 +129,12 @@ func (s *Server) CreateTicket(ctx context.Context, req *ticket_service.CreateTic
 	if err := s.Ticket.Create(ctx, ticket); err != nil {
 		return nil, s.mapError(err)
 	}
+	// Fire-and-forget: событие должно уйти даже при отмене запроса, но с таймаутом
 	if s.Producer != nil {
 		payload := ticketEventPayload(ticket)
-		go s.Producer.ProduceTicketEvent(context.Background(), "ticket.created", payload)
+		eventCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		go s.Producer.ProduceTicketEvent(eventCtx, "ticket.created", payload)
 	}
 	return toProtoTicket(ticket), nil
 }
@@ -212,9 +216,12 @@ func (s *Server) UpdateTicket(ctx context.Context, req *ticket_service.UpdateTic
 	if err != nil {
 		return nil, s.mapError(err)
 	}
+	// Fire-and-forget: событие должно уйти даже при отмене запроса, но с таймаутом
 	if s.Producer != nil {
 		if full, _ := s.Ticket.GetByID(ctx, uint64(req.GetId())); full != nil {
-			go s.Producer.ProduceTicketEvent(context.Background(), "ticket.updated", ticketEventPayload(full))
+			eventCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			go s.Producer.ProduceTicketEvent(eventCtx, "ticket.updated", ticketEventPayload(full))
 		}
 	}
 	return toProtoTicket(ticket), nil
