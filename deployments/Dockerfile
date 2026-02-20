@@ -1,14 +1,18 @@
-FROM golang:1.21-alpine AS builder
+# No replace, no go.work: inject helpy and infra into GOMODCACHE.
+FROM golang:1.26-alpine AS builder
+ENV GOMODCACHE=/go/pkg/mod
 WORKDIR /app
-COPY go.mod go.sum ./
+COPY helpy /go/pkg/mod/github.com/psds-microservice/helpy@v0.1.0
+COPY infra /go/pkg/mod/github.com/psds-microservice/infra@v0.0.3
+COPY ticket-service ./ticket-service
+WORKDIR /app/ticket-service
 RUN go mod download
-COPY . .
 RUN CGO_ENABLED=0 go build -ldflags="-s -w" -o /ticket-service ./cmd/ticket-service
 
 FROM alpine:3.19
 RUN apk --no-cache add ca-certificates
 WORKDIR /app
 COPY --from=builder /ticket-service .
-EXPOSE 8097
+COPY --from=builder /app/ticket-service/database ./database
+EXPOSE 8095
 CMD ["./ticket-service", "api"]
-
