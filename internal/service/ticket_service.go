@@ -9,6 +9,23 @@ import (
 	"gorm.io/gorm"
 )
 
+// Allowed List filter keys (column = ?) to prevent SQL injection.
+var allowedListFilters = map[string]bool{
+	"client_id = ?":   true,
+	"operator_id = ?": true,
+	"status = ?":      true,
+	"region = ?":      true,
+}
+
+// Allowed Update field names to prevent SQL injection.
+var allowedUpdateFields = map[string]bool{
+	"subject":  true,
+	"notes":    true,
+	"status":   true,
+	"priority": true,
+	"region":   true,
+}
+
 // TicketServicer — интерфейс для gRPC Deps (Dependency Inversion).
 type TicketServicer interface {
 	Create(ctx context.Context, t *model.Ticket) error
@@ -45,6 +62,9 @@ func (s *TicketService) List(ctx context.Context, filter map[string]interface{},
 	var total int64
 	tx := s.db.WithContext(ctx).Model(&model.Ticket{})
 	for k, v := range filter {
+		if !allowedListFilters[k] {
+			continue // ignore unknown keys (whitelist)
+		}
 		tx = tx.Where(k, v)
 	}
 	// Count total before pagination
@@ -72,7 +92,16 @@ func (s *TicketService) Update(ctx context.Context, id uint64, changes map[strin
 		}
 		return nil, err
 	}
-	if err := s.db.WithContext(ctx).Model(&t).Updates(changes).Error; err != nil {
+	whitelisted := make(map[string]interface{})
+	for k, v := range changes {
+		if allowedUpdateFields[k] {
+			whitelisted[k] = v
+		}
+	}
+	if len(whitelisted) == 0 {
+		return &t, nil
+	}
+	if err := s.db.WithContext(ctx).Model(&t).Updates(whitelisted).Error; err != nil {
 		return nil, err
 	}
 	return &t, nil

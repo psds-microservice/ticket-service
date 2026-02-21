@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"strings"
 	"time"
 
 	"github.com/psds-microservice/ticket-service/internal/errs"
@@ -12,6 +13,7 @@ import (
 	"github.com/psds-microservice/ticket-service/internal/service"
 	"github.com/psds-microservice/ticket-service/pkg/gen/ticket_service"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/types/known/timestamppb"
 	"gorm.io/gorm"
@@ -32,6 +34,19 @@ type Server struct {
 // NewServer создаёт gRPC-сервер с внедрёнными сервисами
 func NewServer(deps Deps) *Server {
 	return &Server{Deps: deps}
+}
+
+// getMetadata returns the first value for key from incoming gRPC metadata (case-insensitive key).
+func getMetadata(ctx context.Context, key string) string {
+	md, ok := metadata.FromIncomingContext(ctx)
+	if !ok {
+		return ""
+	}
+	keyLower := strings.ToLower(key)
+	if v := md.Get(keyLower); len(v) > 0 {
+		return strings.TrimSpace(v[0])
+	}
+	return ""
 }
 
 func (s *Server) mapError(err error) error {
@@ -186,6 +201,18 @@ func (s *Server) UpdateTicket(ctx context.Context, req *ticket_service.UpdateTic
 	if req.GetId() <= 0 {
 		return nil, status.Error(codes.InvalidArgument, "id must be greater than 0")
 	}
+	// Permission check: caller must be the ticket's client or assigned operator.
+	ticket, err := s.Ticket.GetByID(ctx, uint64(req.GetId()))
+	if err != nil {
+		return nil, s.mapError(err)
+	}
+	callerID := getMetadata(ctx, "x-caller-id")
+	if callerID == "" {
+		return nil, status.Error(codes.PermissionDenied, "caller identity required (x-caller-id)")
+	}
+	if ticket.ClientID != callerID && ticket.OperatorID != callerID {
+		return nil, status.Error(codes.PermissionDenied, "caller is not the ticket client or assigned operator")
+	}
 	changes := make(map[string]interface{})
 	if req.GetSubject() != "" {
 		changes["subject"] = req.GetSubject()
@@ -212,7 +239,7 @@ func (s *Server) UpdateTicket(ctx context.Context, req *ticket_service.UpdateTic
 		return nil, status.Error(codes.InvalidArgument, "no changes provided")
 	}
 
-	ticket, err := s.Ticket.Update(ctx, uint64(req.GetId()), changes)
+	ticket, err = s.Ticket.Update(ctx, uint64(req.GetId()), changes)
 	if err != nil {
 		return nil, s.mapError(err)
 	}
